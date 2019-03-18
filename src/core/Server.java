@@ -77,7 +77,7 @@ public class Server {
 			
 			try(FileWriter file = new FileWriter("settings.json"))
 			{
-				obj.put("portValue", "2332");
+				obj.put("serverport", "2332");
 				file.write(obj.toJSONString());
 				file.flush();
 			}catch(IOException e1)
@@ -99,7 +99,7 @@ public class Server {
 			obj = new JSONObject();
 			try(FileWriter file = new FileWriter("settings.json"))
 			{
-				obj.put("portValue", "2332");
+				obj.put("serverport", "2332");
 				file.write(obj.toJSONString());
 				file.flush();
 			} catch (IOException e1) {
@@ -109,7 +109,7 @@ public class Server {
 		}
 			
 		try {
-			this.server = new ServerSocket(Integer.parseInt((String) obj.get("portValue")));
+			this.server = new ServerSocket(Integer.parseInt((String) obj.get("serverport")));
 		} catch (IOException e) {
 			System.out.println(e.getClass().getName());
 			e.printStackTrace();
