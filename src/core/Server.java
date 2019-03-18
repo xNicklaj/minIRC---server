@@ -42,41 +42,9 @@ public class Server {
 			}
 			
 			JSONParser parser = new JSONParser();
-			Object temp = null;
-			try {
-				temp = parser.parse(new FileReader("settings.json"));
-			} catch (FileNotFoundException e2) {
-				System.err.println("An error occured while trying to read the settings. Exiting in 10 seconds.");
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e1) {
-					System.out.println(e1.getClass().getName());
-					e1.printStackTrace();
-				}
-				System.exit(-1);
-			} catch (IOException e2) {
-				System.err.println("An error occured while trying to read the settings. Exiting in 10 seconds.");
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e1) {
-					System.out.println(e1.getClass().getName());
-					e1.printStackTrace();
-				}
-				System.exit(-1);
-			} catch (ParseException e2) {
-				System.err.println("An error occured while trying to read the settings. Exiting in 10 seconds.");
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e1) {
-					System.out.println(e1.getClass().getName());
-					e1.printStackTrace();
-				}
-				System.exit(-1);
-			}
-			this.obj = (JSONObject) temp;
-			
 			try(FileWriter file = new FileWriter("settings.json"))
 			{
+				obj = new JSONObject();
 				obj.put("serverport", "2332");
 				file.write(obj.toJSONString());
 				file.flush();
