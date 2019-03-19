@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/json-simple-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/ini4j-0.5.4.jar"/>
+	<classpathentry kind="lib" path="lib/jdom2-2.0.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

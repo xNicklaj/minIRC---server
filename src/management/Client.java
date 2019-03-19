@@ -17,8 +17,6 @@ public class Client extends Thread{
 	private Group group;
 	private boolean isActive;
 	
-	private Wini ini;
-	
 	public Client(String username, String IP, Group group)
 	{
 		this.username = username;
@@ -37,25 +35,6 @@ public class Client extends Thread{
 			System.out.println(e.getClass().getName());
 			e.printStackTrace();
 		}
-	}
-	
-	public Client(Socket socket, Wini ini)
-	{
-		this.socket = socket;
-		try {
-			this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			this.IP = socket.getInetAddress().toString();
-			this.username = reader.readLine();
-		} catch (IOException e) {
-			System.out.println(e.getClass().getName());
-			e.printStackTrace();
-		}
-		this.ini = ini;
-	}
-	
-	public void setWini(Wini ini)
-	{
-		this.ini = ini;
 	}
 
 	public void toggleActivity()
