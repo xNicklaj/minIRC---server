@@ -2,7 +2,10 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -41,7 +44,7 @@ public class Server {
 		}catch(InvalidPathException e)
 		{
 			if(Files.notExists(Paths.get(PathFinder.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6) + "/settings.ini")))
-			{
+			{	
 				Files.createFile(Paths.get(PathFinder.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6) + "/settings.ini"));
 				ini = new Wini(new File("settings.ini"));
 				ini.put("general", "name", "A minIRC server");
@@ -85,5 +88,11 @@ public class Server {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void streamServerAttributes(Socket socket) throws IOException
+	{
+		PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+		writer.println(this.ini.get("general", "name"));
 	}
 }
