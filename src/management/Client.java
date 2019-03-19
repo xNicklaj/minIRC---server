@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Scanner;
 
+import org.ini4j.Wini;
+
 public class Client extends Thread{
 	private static Object mutex;
 	private Socket socket;
@@ -14,6 +16,8 @@ public class Client extends Thread{
 	private BufferedReader reader;
 	private Group group;
 	private boolean isActive;
+	
+	private Wini ini;
 	
 	public Client(String username, String IP, Group group)
 	{
@@ -33,6 +37,25 @@ public class Client extends Thread{
 			System.out.println(e.getClass().getName());
 			e.printStackTrace();
 		}
+	}
+	
+	public Client(Socket socket, Wini ini)
+	{
+		this.socket = socket;
+		try {
+			this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			this.IP = socket.getInetAddress().toString();
+			this.username = reader.readLine();
+		} catch (IOException e) {
+			System.out.println(e.getClass().getName());
+			e.printStackTrace();
+		}
+		this.ini = ini;
+	}
+	
+	public void setWini(Wini ini)
+	{
+		this.ini = ini;
 	}
 
 	public void toggleActivity()
