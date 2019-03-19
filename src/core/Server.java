@@ -19,12 +19,18 @@ import management.PathFinder;
 public class Server {
 	private List<Client> clientList;
 	private ServerSocket server;
+	private CLI cli;
 	private boolean run = true;
 	private Wini ini;
 	
 	public Server()
 	{
 		this.clientList = new ArrayList<Client>();
+		cli = new CLI(this);
+	}
+	
+	public List<Client> getClientList() {
+		return clientList;
 	}
 	
 	public void createIni() throws IOException
@@ -81,11 +87,13 @@ public class Server {
 	{
 		try {
 			this.iniLoad();
+			cli.start();
 			while(run)
 			{
 				this.clientList.add(new Client(server.accept()));
 				this.clientList.get(this.clientList.size() - 1).setName(this.clientList.get(this.clientList.size() - 1).getIP());
 				this.streamServerAttributes(this.clientList.get(this.clientList.size() - 1));
+				System.out.println("Host accepted");
 				this.clientList.get(this.clientList.size() - 1).start();
 			}
 		} catch (IOException e) {

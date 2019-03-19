@@ -33,7 +33,7 @@ public class Client extends Thread{
 		try {
 			this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			this.IP = socket.getInetAddress().toString();
-			this.username = reader.readLine();
+			this.setName(this.IP);
 		} catch (IOException e) {
 			System.out.println(e.getClass().getName());
 			e.printStackTrace();
@@ -83,7 +83,7 @@ public class Client extends Thread{
 	public void register()
 	{
 		try {
-			reader.readLine();
+			this.username = reader.readLine();
 			reader.readLine();
 			new PrintWriter(socket.getOutputStream(), true).println("1");
 			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": User registered");
@@ -96,7 +96,7 @@ public class Client extends Thread{
 	public void login()
 	{
 		try {
-			reader.readLine();
+			this.username = reader.readLine();
 			reader.readLine();
 			new PrintWriter(socket.getOutputStream(), true).println("1");
 			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": User logged in");
@@ -109,10 +109,12 @@ public class Client extends Thread{
 	
 	public void run()
 	{
+		System.out.println("Thread started");
 		try {
 			switch(reader.readLine())
 			{
 			case "register":
+				System.out.println("register received");
 				this.register();
 				break;
 			case "login":
@@ -127,6 +129,7 @@ public class Client extends Thread{
 			}
 		} catch (IOException e) {
 			this.disconnect();
+			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": User disconnected");
 		}	
 	}
 	
