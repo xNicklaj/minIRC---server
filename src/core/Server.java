@@ -2,16 +2,12 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import management.Client;
@@ -23,6 +19,7 @@ import management.PathFinder;
 public class Server {
 	private List<Client> clientList;
 	private ServerSocket server;
+	private boolean run = true;
 	private Wini ini;
 	
 	public Server()
@@ -69,6 +66,11 @@ public class Server {
 		}
 	}
 	
+	public void toggleRun()
+	{
+		this.run = !this.run;
+	}
+	
 	public static void main(String args[])
 	{
 		Server server = new Server();
@@ -79,11 +81,13 @@ public class Server {
 	{
 		try {
 			this.iniLoad();
-			this.clientList.add(new Client(server.accept()));
-			this.clientList.get(this.clientList.size() - 1).setName(this.clientList.get(this.clientList.size() - 1).getIP());
-			this.streamServerAttributes(this.clientList.get(this.clientList.size() - 1));
-			this.clientList.get(this.clientList.size() - 1).start();
-			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.clientList.get(this.clientList.size() - 1).getUsernameAtAddress() + ": Client connected" );
+			while(run)
+			{
+				this.clientList.add(new Client(server.accept()));
+				this.clientList.get(this.clientList.size() - 1).setName(this.clientList.get(this.clientList.size() - 1).getIP());
+				this.streamServerAttributes(this.clientList.get(this.clientList.size() - 1));
+				this.clientList.get(this.clientList.size() - 1).start();
+			}
 		} catch (IOException e) {
 			System.out.println(e.getClass().getName());
 			e.printStackTrace();

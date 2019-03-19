@@ -3,7 +3,10 @@ package management;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Scanner;
 
 import org.ini4j.Wini;
@@ -77,9 +80,46 @@ public class Client extends Thread{
 		return IP;
 	}
 	
+	public void register()
+	{
+		try {
+			reader.readLine();
+			reader.readLine();
+			new PrintWriter(socket.getOutputStream(), true).println("1");
+			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": User registered");
+		} catch (IOException e) {
+			System.out.println(e.getClass().getName());
+			e.printStackTrace();
+		}
+	}
+	
+	public void login()
+	{
+		try {
+			reader.readLine();
+			reader.readLine();
+			new PrintWriter(socket.getOutputStream(), true).println("1");
+			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": User logged in");
+		} catch (IOException e) {
+			System.out.println(e.getClass().getName());
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public void run()
 	{
 		try {
+			switch(reader.readLine())
+			{
+			case "register":
+				this.register();
+				break;
+			case "login":
+				this.login();
+				break;
+			}
+			
 			while(isActive)
 			{
 				reader.readLine(); 
