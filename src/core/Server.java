@@ -31,15 +31,25 @@ public class Server {
 	{
 		try {
 			if(Files.notExists(Paths.get(PathFinder.getProjectPath() + "/settings.ini")))
+			{
 				Files.createFile(Paths.get(PathFinder.getProjectPath() + "/settings.ini"));
+				ini = new Wini(new File("settings.ini"));
+				ini.put("general", "name", "A minIRC server");
+				ini.put("network", "port", "2332");
+				ini.store();
+			}
 		}catch(InvalidPathException e)
 		{
 			if(Files.notExists(Paths.get(PathFinder.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6) + "/settings.ini")))
+			{
 				Files.createFile(Paths.get(PathFinder.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6) + "/settings.ini"));
+				ini = new Wini(new File("settings.ini"));
+				ini.put("general", "name", "A minIRC server");
+				ini.put("network", "port", "2332");
+				ini.store();
+			}
 		}
-		ini = new Wini(new File("settings.ini"));
-		ini.put("network", "port", "2332");
-		ini.store();
+		
 	}
 	
 	public void iniLoad() throws IOException

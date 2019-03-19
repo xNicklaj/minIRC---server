@@ -116,13 +116,8 @@ public class Settings implements XMLLoadable{
 		Element content = new Element("content");
 		settings.getDocument().setRootElement(content);
 		
-		Element serverlist = new Element("serverlist");
-		Element settings = new Element("settings");
+		Element users = new Element("users");
 		
-		settings.addContent(new Element("theme"));
-		settings.getChild("theme").setText("forest");
-		
-		this.settings.getDocument().getRootElement().addContent(serverlist);
-		this.settings.getDocument().getRootElement().addContent(settings);
+		this.settings.getDocument().getRootElement().addContent(users);
 	}
 }
