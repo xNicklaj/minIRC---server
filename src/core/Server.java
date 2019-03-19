@@ -81,6 +81,7 @@ public class Server {
 			this.iniLoad();
 			this.clientList.add(new Client(server.accept()));
 			this.clientList.get(this.clientList.size() - 1).setName(this.clientList.get(this.clientList.size() - 1).getIP());
+			this.streamServerAttributes(this.clientList.get(this.clientList.size() - 1));
 			this.clientList.get(this.clientList.size() - 1).start();
 			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.clientList.get(this.clientList.size() - 1).getUsernameAtAddress() + ": Client connected" );
 		} catch (IOException e) {
@@ -90,9 +91,9 @@ public class Server {
 		
 	}
 	
-	public void streamServerAttributes(Socket socket) throws IOException
+	public void streamServerAttributes(Client client) throws IOException
 	{
-		PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+		PrintWriter writer = new PrintWriter(client.getSocket().getOutputStream(), true);
 		writer.println(this.ini.get("general", "name"));
 	}
 }
