@@ -1,5 +1,7 @@
 package core;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Scanner;
@@ -20,7 +22,6 @@ public class CLI extends Thread{
 	{
 		do
 		{
-			System.out.print("> ");
 			lastInput = input.nextLine();
 			if(lastInput.trim().substring(0, 4).contains("exit"))
 				continue;
@@ -33,16 +34,26 @@ public class CLI extends Thread{
 	public void kick()
 	{
 		String host = lastInput.split(" ")[1];
+		//TODO: kick all users via IP
+		//TODO-CLIENT: add error messages and kicks
 		int i = 0;
-		while(i < server.getClientList().size() || server.getClientList().get(i).getUsername().equals(host) || server.getClientList().get(i).getIP().equals(host))
-			i++;
-		
-		if(i == server.getClientList().size())
-			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + "admin@localhost" + " tried to kick the remote host " + host + " but failed.");
-		else 
+		try {
+			while(i < server.getClientList().size() && (!server.getClientList().get(i).getUsername().equals(host) && !server.getClientList().get(i).getIP().equals(host)))
+				i++;			
+		}catch(IndexOutOfBoundsException e)
 		{
-			server.getClientList().get(i).disconnect();
-			server.getClientList().remove(i);
+			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + "admin@localhost: " + "host " + host + " not found.");
 		}
+		
+		System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + "admin@localhost: " + "kicked " + host);
+		
+		try {
+			server.getClientList().get(i).sendToThis("admin", "0xc0001");
+		} catch (IOException e) {
+			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + "admin@localhost: " + "Tried to kick " + host + " but failed.");
+		}
+		server.getClientList().get(i).disconnect();
+		server.getClientList().remove(i);
+		server.broadcastMessage("admin", "L'utente " + server.getClientList().get(i).getUsername() + " è stato kickato dall'amministratore.");
 	}
 }

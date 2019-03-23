@@ -2,7 +2,9 @@ package management;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -11,14 +13,19 @@ import java.util.Scanner;
 
 import org.ini4j.Wini;
 
+import core.Server;
+
 public class Client extends Thread{
 	private static Object mutex;
+	private boolean isActive = true;
+	
 	private Socket socket;
 	private String username;
 	private String IP;
-	private BufferedReader reader;
 	private Group group;
-	private boolean isActive = true;
+	
+	private BufferedReader reader;
+	private Server server;
 	
 	public Client(String username, String IP, Group group)
 	{
@@ -27,12 +34,13 @@ public class Client extends Thread{
 		this.group = group;
 	}
 	
-	public Client(Socket socket)
+	public Client(Socket socket, Server server)
 	{
 		this.socket = socket;
+		this.server = server;
 		try {
 			this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			this.IP = socket.getInetAddress().toString();
+			this.IP = socket.getInetAddress().toString().substring(1);
 			this.setName(this.IP);
 		} catch (IOException e) {
 			System.out.println(e.getClass().getName());
@@ -80,12 +88,28 @@ public class Client extends Thread{
 		return IP;
 	}
 	
+	public InputStream getInputStream() throws IOException
+	{
+		return this.socket.getInputStream();
+	}
+	
+	public OutputStream getOutputStream() throws IOException
+	{
+		return this.socket.getOutputStream();
+	}
+	
+	public synchronized void sendToThis(String username, String message) throws IOException
+	{
+		new PrintWriter(socket.getOutputStream(), true).println(username);
+		new PrintWriter(socket.getOutputStream(), true).println(message);
+	}
+	
 	public void register()
 	{
 		try {
 			this.username = reader.readLine();			
 			reader.readLine();
-			new PrintWriter(socket.getOutputStream(), true).println("1");
+			new PrintWriter(socket.getOutputStream(), true).println();
 			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": User registered");
 		} catch (IOException e) {
 			System.out.println(e.getClass().getName());
@@ -109,13 +133,11 @@ public class Client extends Thread{
 	
 	public void run()
 	{
-		System.out.println("Thread started");
-		String debug = null;
+		String message;
 		try {
-			switch(debug = reader.readLine())
+			switch(reader.readLine())
 			{
 			case "register":
-				System.out.println("register received");
 				this.register();
 				break;
 			case "login":
@@ -125,13 +147,14 @@ public class Client extends Thread{
 			
 			while(isActive)
 			{
-				reader.readLine(); 
-				
+				message = reader.readLine();
+				System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": " + message);
+				server.broadcastMessage(this.username, message);
 			}
 		} catch (IOException e) {
 			this.disconnect();
+			this.server.removeFromList(username);
 			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": User disconnected");
-			System.out.println("Thread stopped " + debug);
 		}	
 	}
 	

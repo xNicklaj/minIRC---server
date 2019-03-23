@@ -1,13 +1,17 @@
 package core;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import management.Client;
@@ -72,6 +76,14 @@ public class Server {
 		}
 	}
 	
+	public synchronized void removeFromList(String username)
+	{
+		for(int i = 0; i < this.clientList.size(); i++)
+			if(this.clientList.get(i).getUsername().equals(username))
+				this.clientList.remove(i);
+		
+	}
+	
 	public void toggleRun()
 	{
 		this.run = !this.run;
@@ -88,12 +100,12 @@ public class Server {
 		try {
 			this.iniLoad();
 			cli.start();
+			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + "Server listening for new connections");
 			while(run)
 			{
-				this.clientList.add(new Client(server.accept()));
+				this.clientList.add(new Client(server.accept(), this));
 				this.clientList.get(this.clientList.size() - 1).setName(this.clientList.get(this.clientList.size() - 1).getIP());
 				this.streamServerAttributes(this.clientList.get(this.clientList.size() - 1));
-				System.out.println("Host accepted");
 				this.clientList.get(this.clientList.size() - 1).start();
 			}
 		} catch (IOException e) {
@@ -107,5 +119,17 @@ public class Server {
 	{
 		PrintWriter writer = new PrintWriter(client.getSocket().getOutputStream(), true);
 		writer.println(this.ini.get("general", "name"));
+	}
+	
+	public synchronized void broadcastMessage(String username, String message)
+	{
+		for(int i = 0; i < this.clientList.size(); i++)
+		{
+			try {
+				this.clientList.get(i).sendToThis(username, message);
+			} catch (IOException | IndexOutOfBoundsException e) {
+				return;
+			}
+		}
 	}
 }
