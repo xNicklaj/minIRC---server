@@ -26,17 +26,17 @@ public class Server {
 	private CLI cli;
 	private boolean run = true;
 	private Wini ini;
-	
+
 	public Server()
 	{
 		this.clientList = new ArrayList<Client>();
 		cli = new CLI(this);
 	}
-	
+
 	public List<Client> getClientList() {
 		return clientList;
 	}
-	
+
 	public void createIni() throws IOException
 	{
 		try {
@@ -59,9 +59,9 @@ public class Server {
 				ini.store();
 			}
 		}
-		
+
 	}
-	
+
 	public void iniLoad() throws IOException
 	{
 		try {
@@ -72,29 +72,29 @@ public class Server {
 		}
 		catch(NullPointerException e)
 		{
-		
+
 		}
 	}
-	
+
 	public synchronized void removeFromList(String username)
 	{
 		for(int i = 0; i < this.clientList.size(); i++)
 			if(this.clientList.get(i).getUsername().equals(username))
 				this.clientList.remove(i);
-		
+
 	}
-	
+
 	public void toggleRun()
 	{
 		this.run = !this.run;
 	}
-	
+
 	public static void main(String args[])
 	{
 		Server server = new Server();
 		server.start();
 	}
-	
+
 	public void start()
 	{
 		try {
@@ -112,15 +112,15 @@ public class Server {
 			System.out.println(e.getClass().getName());
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public void streamServerAttributes(Client client) throws IOException
 	{
 		PrintWriter writer = new PrintWriter(client.getSocket().getOutputStream(), true);
 		writer.println(this.ini.get("general", "name"));
 	}
-	
+
 	public synchronized void broadcastMessage(String username, String message)
 	{
 		for(int i = 0; i < this.clientList.size(); i++)

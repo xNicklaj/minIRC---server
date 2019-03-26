@@ -148,6 +148,8 @@ public class Client extends Thread{
 			while(isActive)
 			{
 				message = reader.readLine();
+				if(message == null)
+					return;
 				System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": " + message);
 				server.broadcastMessage(this.username, message);
 			}
