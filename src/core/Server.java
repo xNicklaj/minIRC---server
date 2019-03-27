@@ -61,6 +61,11 @@ public class Server {
 		}
 
 	}
+	
+	public CLI getCLI()
+	{
+		return this.cli;
+	}
 
 	public void iniLoad() throws IOException
 	{

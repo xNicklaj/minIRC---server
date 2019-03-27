@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Scanner;
@@ -27,11 +28,14 @@ public class Client extends Thread{
 	private BufferedReader reader;
 	private Server server;
 	
+	private boolean isKicked;
+	
 	public Client(String username, String IP, Group group)
 	{
 		this.username = username;
 		this.IP = IP;
 		this.group = group;
+		isKicked = false;
 	}
 	
 	public Client(Socket socket, Server server)
@@ -122,13 +126,18 @@ public class Client extends Thread{
 		try {
 			this.username = reader.readLine();
 			reader.readLine();
-			new PrintWriter(socket.getOutputStream(), true).println("1");
+			new PrintWriter(socket.getOutputStream(), true).println();
 			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": User logged in");
 		} catch (IOException e) {
 			System.out.println(e.getClass().getName());
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void kick()
+	{
+		this.isKicked = true;
 	}
 	
 	public void run()
@@ -148,10 +157,32 @@ public class Client extends Thread{
 			while(isActive)
 			{
 				message = reader.readLine();
-				if(message == null)
-					return;
+				if(message == null && !isKicked)
+				{
+					this.disconnect();
+					this.server.removeFromList(username);
+					System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": User disconnected");
+					isActive = false;
+					continue;
+				}
+				else if(message == null)
+				{
+					isActive = false;
+					continue;
+				}
+				
 				System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + this.username + "@" + this.IP + ": " + message);
-				server.broadcastMessage(this.username, message);
+				if(message.charAt(0) == '/')
+				{
+					if(this.group == Group.ADMIN)
+						server.getCLI().evaluateCommand(message.substring(1));
+					else
+					{
+						this.sendToThis("admin", "Non hai il permesso necessario per usare comandi.");
+					}
+				}
+				else
+					server.broadcastMessage(this.username, message);
 			}
 		} catch (IOException e) {
 			this.disconnect();
