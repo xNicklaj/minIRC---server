@@ -105,6 +105,16 @@ public class Server {
 		try {
 			this.iniLoad();
 			cli.start();
+			System.out.println(
+					"|---------------------------------------------------|\n"
+					+ "|                                                   |\n"
+					+ "|  minIRC, is the server component for the minIRC   |\n"
+					+ "|  project that you can find on the link:           |\n"
+					+ "|  https://www.github.com/xNicklaj/minIRC           |\n"
+					+ "|                                                   |\n"
+					+ "|  You can type in 'help' for a command list        |\n"
+					+ "|                                                   |\n"
+					+ "|---------------------------------------------------|\n");
 			System.out.println("[" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "] " + "Server listening for new connections");
 			while(run)
 			{

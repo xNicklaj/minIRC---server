@@ -34,9 +34,19 @@ public class CLI extends Thread{
 	{
 		this.lastInput = input;
 		try
-		{
+		{	
 			if(lastInput.trim().substring(0, 4).contains("exit"))
 				return;
+			else if(lastInput.trim().substring(0, 4).contains("help"))
+			{
+				System.out.println(
+							"Commands: \n"
+							+ "  kick [host] \n"
+							+ "  send [host] [message] \n"
+							+ "  op [host] \n"
+							+ "  exit"
+						);
+			}
 			else if(lastInput.trim().substring(0, 4).contains("kick"))
 				this.kick();
 			else if(lastInput.trim().substring(0, 4).contains("send"))
